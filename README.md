@@ -4,6 +4,6 @@
 
 This repository contains the solution used in my YouTube showing one way of building a busy indicator component for Blazor (.NET 8).
 
-YouTube video : Will try to publish later today.
+YouTube video : https://youtu.be/uMS9BmJ3E7U
 
 Coffee welcomed : https://ko-fi.com/codedispenser
