@@ -1,0 +1,91 @@
+﻿@page "/zindex"
+
+<h3>Z-index</h3>
+
+<p>
+    The red box comes first in the order, it has z-index of 2 and has a stacking context.
+</p>
+
+<p>
+    The green box comes next in the html, it is shown underneath the red box, its a sibling but with a z-index of 1, it too has a stacking context. If the green box had also been given a 
+    z-index of 2, as they are siblings and it comes after the red box it would have won the stacking contest and come above the red box.
+</p>
+
+<p>
+    The blue box has is last in the order of markup with a z-index of 1000, it too has a stacking context, however, the blue box is inside the green box so its stacking context is resolved 
+    from the green box. As the green box stacking context is below the red box, it is impossible for the blue box to get out of this context and come above the red box.
+</p>.
+
+<div style="background-color:red; z-index:2;position:relative; width:200px; height:200px;"></div>
+
+<div style="background-color:green; z-index:1;position:relative; top:-100px;left:50px; width:200px; height:200px;">
+    <div style="background-color:blue; z-index:1000;position:relative; top:50px; left:50px; width:200px; height:200px;"></div>
+</div>
+
+<p>
+    The reason that all of this <b>MAY</b> be important is because the busy indicator uses positioning (needed for z-index) and if it is nested inside a container that has a sibling container with a higher z-index, the busy indicator
+    would not be able to show above it. <b>This is only when you want the to use the enum value of BusyIndicator.OverlayPosition.Screen to cover the whole window unimpeded.</b>
+</p>
+
+<p>
+    We cannot change the behaviour of the stacking contexts, so if for some reason your design was such that the busy indicator was in a sibling container with a lower z-index the only thing you could do would be to move the busy indicator
+    to a different location.
+</p>
+
+<p>
+    The problem now is, how do you tell the busy indicator to show itself. This problem is made more difficult given blazors render modes.
+    I have not looked at creating a service and maybe writing the component by hand i.e using the build render tree so I cannot advise how to do that.
+    I have however solved this in a different way so I could create these types of components in a simple manor.
+</p>
+
+<p>
+    I wrote an notification system / event aggregator for the old blazor wasm (and domain events) which allows you to register event handlers to receive events in some components and have other components publish events.
+    Basically you could create an event class with properties such as IsLoading and AriaLiveText (the other properties you would just set on the busy indicator) and then via an event communicate with the busy indicator.
+</p>
+
+<p>
+    You could then simply create a wrapper component that holds the code to register and receive the events, via an injected event aggregator. Place the busy indicator inside the wrapper component and then in the event handlers update the
+    property values used for the busy indicator. You would just need to register the event aggregator in both the server and client IOC containers.
+</p>
+
+<p>
+    Using this project as an example (Auto per page), as its static SSR by default (no interactivity) unless you add the render mode to pages or components.
+    As we are using both server components and client wasm components we could simply create a wrapper component that contains our busy indicator, with the wrapper having its render mode attribute set to either 'new InteractiveServerRenderMode(false)'
+    or ''new InteractiveSWebAssemblyRenderMode(false)' and then place two instances of this component in a suitable location to ensure it wins any stacking context contests, such as the routes component
+</p>
+
+<p>
+    Change of plan rather than just describe things, I may as well just include all the code so you can see it in action.
+    <br />
+    What did I do / you need to do:
+    <ul>
+        <li>Add Eventer nuget package to server and client project or copy paste files from my github repo..</li>
+        <li>
+            Add  'builder.Services.AddScoped&lt;EventAggregator&gt;()''; or 'builder.Services.AddScoped&lt;IEventAggregator,EventAggregator&gt;();' if you prefer to just use the interface as the injected reference, to
+            both the server and client project program file.
+        </li>
+        <li>
+            Create an event and place it where it can be referenced by both the client and server, if you have a contracts project then this would be the placed. I will just use the client project for the demo as the server
+            references it any way. See event named 'SetBusyIndicatorEvent' in client project.
+        </li>
+        <li>
+            Create an extremely simple wrapper component to hold a instance of the busy indicator and use the event mechanism to show hide the indicator and update aria live region. See simple WrappedIndicator component in the client project.
+        </li>
+        <li>
+            Publish event from any component that needs to use this global instance of the indicator because their local instance does not win the stacking contest. Again, you may never need to do any of this, but I suppose it is usual information.
+            See additional code added to both the pages that we created in the video.
+        </li>
+    </ul>
+
+</p>
+
+<p>
+    <b>You do not need to think about any of the above unless you run into a stacking problem that cannot be solved by just overriding the ccs and giving the busy indicator a higher z-index number.</b>
+</p>
+
+<p>
+    For those interested in learning more about my event aggregator 'Eventor'', the source code, console demos and docs are on github as well (I need to make a video on this as well if people ever watch/like my content):
+    <a href="https://github.com/code-dispenser/Eventor" target="_blank">Code dispenser's Eventor</a>
+</p>
+
+

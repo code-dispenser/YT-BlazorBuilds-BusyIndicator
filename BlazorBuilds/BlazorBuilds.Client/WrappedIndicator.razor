@@ -1,0 +1,39 @@
+﻿@implements IDisposable
+
+@inject EventAggregator _eventAggregator
+
+<BusyIndicator IsLoading="@_isLoading" BusyText="@_busyText" AriaLiveText="@_ariaLiveText" OverlayFixAt="BusyIndicator.OverlayPosition.Screen" 
+ContentAlign="BusyIndicator.ContentPosition.Top" />
+
+@code {
+    private EventSubscription? _busyIndicatorSubscription;
+
+    public bool   _isLoading    = false;
+    public string _ariaLiveText = String.Empty;
+    public string _busyText     = String.Empty;
+
+    protected override void OnInitialized()
+    {
+        _busyIndicatorSubscription = _eventAggregator.Subscribe<SetBusyIndicatorEvent>(HandleIndicatorEvent);
+        base.OnInitialized();
+    }
+    /*
+    * Handler that you subscribe with the aggregator to receive the Type of event. One subscription be subscribed handler.
+    */
+    public async Task HandleIndicatorEvent(SetBusyIndicatorEvent indicatorEvent, CancellationToken cancellationToken)
+    {
+        _isLoading    = indicatorEvent.ShowLoader;
+        _busyText     = indicatorEvent.BusyText;
+        _ariaLiveText = indicatorEvent.AriaLiveText;
+        /*
+        * Needed for both, invoke avoids synchronization context issues on the server side of things.
+     */
+        await InvokeAsync(StateHasChanged);
+
+    }
+    /*
+        * Clean up, remove subscription references.
+    */
+    public void Dispose() => _busyIndicatorSubscription?.Dispose();
+
+}

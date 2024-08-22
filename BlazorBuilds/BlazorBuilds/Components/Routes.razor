@@ -1,0 +1,12 @@
+﻿<WrappedIndicator @rendermode="new InteractiveServerRenderMode(false)" />
+@* 
+    Bonus this will initiate the wasm download before you get to the client page. 
+*@
+<WrappedIndicator @rendermode="new InteractiveWebAssemblyRenderMode(false)" />
+
+<Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly }">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>

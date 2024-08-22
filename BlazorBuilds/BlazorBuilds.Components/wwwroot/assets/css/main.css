@@ -1,0 +1,71 @@
+﻿.busy-indicator {
+  z-index: 2;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  animation: fade-in 750ms;
+}
+.busy-indicator--unfixed {
+  position: absolute;
+}
+.busy-indicator--centred {
+  align-items: center;
+}
+.busy-indicator__content {
+  width: fit-content;
+  padding: 1rem;
+  background-color: navy;
+  border-radius: 0.75rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+}
+.busy-indicator__content--column {
+  flex-direction: column;
+}
+.busy-indicator__spinner {
+  min-height: 1.5rem;
+  min-width: 1.5rem;
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 750ms linear infinite;
+}
+.busy-indicator__text {
+  font-size: 0.75rem;
+  color: white;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.screen-reader-only {
+  z-index: -1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  font-size: 1px;
+  color: transparent;
+}
