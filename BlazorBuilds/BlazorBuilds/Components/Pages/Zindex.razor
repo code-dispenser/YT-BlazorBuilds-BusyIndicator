@@ -34,17 +34,18 @@
 
 <p>
     The problem now is, how do you tell the busy indicator to show itself. This problem is made more difficult given blazors render modes.
-    I have not looked at creating a service and maybe writing the component by hand i.e using the build render tree so I cannot advise how to do that.
-    I have however solved this in a different way so I could create these types of components in a simple manor.
+    You could create a service specially for the busy indicator, and have code in the busy indicator register to some events in the service (so a single global component), but then you would also need some sort of id to distinguish between indicators
+    if you wanted multiple indicators on the same page, waiting on different tasks at the local level. 
+    I opted for a different path, in part because I already had sone code that does notifications which I could just simply use to solve this issue if I ever needed to.
 </p>
 
 <p>
-    I wrote an notification system / event aggregator for the old blazor wasm (and domain events) which allows you to register event handlers to receive events in some components and have other components publish events.
+    I had previously written an notification system / event aggregator for the old blazor wasm (and domain events) which allows you to register event handlers to receive events in some components and have other components publish events.
     Basically you could create an event class with properties such as IsLoading and AriaLiveText (the other properties you would just set on the busy indicator) and then via an event communicate with the busy indicator.
 </p>
 
 <p>
-    You could then simply create a wrapper component that holds the code to register and receive the events, via an injected event aggregator. Place the busy indicator inside the wrapper component and then in the event handlers update the
+    With the above, you could then simply create a wrapper component that holds the code to register and receive the events, via an injected event aggregator. Place the busy indicator inside the wrapper component and then in the event handlers update the
     property values used for the busy indicator. You would just need to register the event aggregator in both the server and client IOC containers.
 </p>
 
