@@ -1,0 +1,72 @@
+﻿@inject EventAggregator _eventAggregator
+
+@page "/autobusy"
+
+@rendermode InteractiveAuto
+
+<h3>AutoBusy</h3>
+
+<div style="width:500px; height:500px; border:1px solid; display:flex;justify-content:center;align-items:center;position:relative;">
+    <BusyIndicator IsLoading="@_isLoading" BusyText="@_busyText" ContentAlign="BusyIndicator.ContentPosition.Top" Direction="BusyIndicator.ContentDirection.Horizonal"
+                   OverlayFixAt="@_overlayPosition" AriaLiveText="@_ariaLiveText" />
+
+    Some form field or data table content would be in here.
+
+</div>
+
+<p>
+    <button disabled="@_disabled" @onclick="async () => await OpenSpinner(BusyIndicator.OverlayPosition.Container)">Open Spinner Container</button>
+    &nbsp;
+    <button disabled="@_disabled" @onclick="async () => await OpenSpinner(BusyIndicator.OverlayPosition.Screen)">Open Spinner Screen</button>
+</p>
+
+<p>
+    Additional button to use the global instance of the busy indicator also on the routes component. See Z-index page for why this has been done.
+</p>
+<p>
+    As this is Auto, it may first run as server and then when all of the wasm files have downloaded, and when there are no web sockets open will run client side.
+    The local contained busy indicator as above is fine in auto, if you need the global instance then you would need both instances of the wrapped component as shown
+    for the client and server busy pages.
+</p>
+<p>
+    You probably will not need to do any of what is described on the Z-index page.
+</p>
+<button @onclick="async () => await OpenGlobalSpinner()">Open Global Spinner Screen</button>
+
+@code {
+
+    private BusyIndicator.OverlayPosition _overlayPosition = BusyIndicator.OverlayPosition.Container;
+
+    private bool _isLoading = false;
+    private string _busyText = ". . . Loading, please wait . . .";
+    private string _ariaLiveText = String.Empty;
+    private bool _disabled = true;
+
+
+
+    private async Task OpenSpinner(BusyIndicator.OverlayPosition overlayPosition)
+    {
+        _overlayPosition = overlayPosition;
+        _ariaLiveText = "loading local";
+        _isLoading = true;
+        await Task.Delay(2000);
+        _isLoading = false;
+        _ariaLiveText = "local finished";
+    }
+
+    private async Task OpenGlobalSpinner()
+    {
+        await _eventAggregator.Publish(new SetBusyIndicatorEvent("Client", true, _busyText, "Loading global"));
+        await Task.Delay(2000);
+        await _eventAggregator.Publish(new SetBusyIndicatorEvent("Client", false, "", "global finished"));
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (true == firstRender)
+        {
+            _disabled = false;
+            StateHasChanged();
+        }
+    }
+}
