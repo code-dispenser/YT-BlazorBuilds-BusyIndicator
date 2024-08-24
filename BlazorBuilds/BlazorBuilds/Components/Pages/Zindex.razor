@@ -33,20 +33,26 @@
 </p>
 
 <p>
-    The problem now is, how do you tell the busy indicator to show itself. This problem is made more difficult given blazors render modes.
-    You could create a service specially for the busy indicator, and have code in the busy indicator register to some events in the service (so a single global component), but then you would also need some sort of id to distinguish between indicators
-    if you wanted multiple indicators on the same page, waiting on different tasks at the local level. 
-    I opted for a different path, in part because I already had sone code that does notifications which I could just simply use to solve this issue if I ever needed to.
+    The problem now is, how do you tell the busy indicator to show itself. This problem is made slightly more difficult given blazors render modes.
+    You could create a dedicated service specially for the busy indicator, and have code in the busy indicator register to some events within the service for a global indicator adn then have clients of the busy indicator use the service. 
 </p>
 
 <p>
-    I had previously written an notification system / event aggregator for the old blazor wasm (and domain events) which allows you to register event handlers to receive events in some components and have other components publish events.
-    Basically you could create an event class with properties such as IsLoading and AriaLiveText (the other properties you would just set on the busy indicator) and then via an event communicate with the busy indicator.
+    Another approach, and for me as I already had a generic notification mechanism would be to use composition and just wrap the busy indicator with notifications so as not to alter the existing code; which could also be used for
+    existing components that you wanted to work with the new blazor render modes.
+</p>
+    
+<p>
+    As I had not planned on showing code for a global instance, and given the video showing code, I did not want to change the existing code and cause any confusion. With that in mind I decided to include code that shows how to wrap a component 
+    and uses events to communicate with our existing code without alteration.
 </p>
 
+
+
 <p>
-    With the above, you could then simply create a wrapper component that holds the code to register and receive the events, via an injected event aggregator. Place the busy indicator inside the wrapper component and then in the event handlers update the
-    property values used for the busy indicator. You would just need to register the event aggregator in both the server and client IOC containers.
+    As a bit of background, I had previously written an notification system / event aggregator for the old blazor wasm (and domain events) which allows you to register event handlers to receive events in some components and have other components publish events.
+    So with this you could create an event class with properties such as IsLoading and AriaLiveText (the other properties you would just set on the busy indicator) and then via an event communicate with the busy indicator.
+    Now, you could take your existing code/component and just create a wrapper component to hold it, with the wrapper component registering to receive events via an injected event aggregator. The wrapper would then use the event data to update the existing component properties.
 </p>
 
 <p>
@@ -56,7 +62,6 @@
 </p>
 
 <p>
-    Change of plan rather than just describe things, I may as well just include all the code so you can see it in action.
     <br />
     What did I do / you need to do:
     <ul>
@@ -82,6 +87,10 @@
 
 <p>
     <b>You do not need to think about any of the above unless you run into a stacking problem that cannot be solved by just overriding the ccs and giving the busy indicator a higher z-index number.</b>
+</p>
+
+<p>
+    For those, wanting a dedicated service approach, just amend your indicator code and create the service with events that the indicator can register with.
 </p>
 
 <p>
