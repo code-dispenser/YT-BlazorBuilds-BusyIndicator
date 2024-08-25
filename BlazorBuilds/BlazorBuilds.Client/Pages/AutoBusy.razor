@@ -21,13 +21,21 @@
 </p>
 
 <p>
-    Additional button to use the global instance of the busy indicator also on the routes component. See Z-index page for why this has been done.
+    Additional button to use the global instance of the busy indicator on the routes component. See Z-index page for why this has been done.
 </p>
 <p>
-    As this is Auto, it may first run as server and then when all of the wasm files have downloaded, and when there are no web sockets open will run client side.
-    The local contained busy indicator as above is fine in auto, if you need the global instance then you would need both instances of the wrapped component as shown
-    for the client and server busy pages.
+    <b>Note:</b> Using the local instance of the busyindicator on all three pages Server, Wasm and Auto is perfectly fine when you do not have the global intances. Just comment out the global instances
+     on the router page to verify this.
+    
+    Using the global Wasm instance on the Router page or Main Layout, as it instantly starts the download seems to effect Auto, as the auto pages seem to wait for the wasm files to download instead of
+    using web sockets. This is odd as it all works fine without the wasm downlaod being started immediately as of the individual pages without the global wasm instance.
 </p>
+<p>
+    Using Server and Wasm global instances together is fine if you do not need Auto as well, all three is fine if you do not need global. Individually Server, Wasm and Auto projects work as normal.
+    <b>Note:</b> Given that using all three modes together and needing all three to have a global instnace due to Z-index problem is something I am not currently going to investigate further as its
+    such and edge case it is something I doubt I will run into. If this is something you really need I can only advise to raise it as an issue with the Blazor team it may be a bug or an unsupported scenario.
+</p>
+
 <p>
     You probably will not need to do any of what is described on the Z-index page.
 </p>

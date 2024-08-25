@@ -25,7 +25,7 @@
     You probably will not need to do any of what is described on the Z-index page.
 </p>
 
-<button @onclick="async () => await OpenGlobalSpinner()">Open Global Spinner Screen</button>
+<button disabled="@_disabled" @onclick="async () => await OpenGlobalSpinner()">Open Global Spinner Screen</button>
 
 @code {
 
