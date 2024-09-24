@@ -10,3 +10,9 @@ YouTube video : https://youtu.be/uMS9BmJ3E7U
 Coffee welcomed : https://ko-fi.com/codedispenser
 
 Updated to include an Auto busy page.
+
+My Visual Studio (VS 2022) environment has the Web Compiler 2022+ extension (by Jason Moore) installed for compiling the Sassy CSS (SCSS) files.
+
+https://marketplace.visualstudio.com/items?itemName=Failwyn.WebCompiler64
+
+https://github.com/failwyn/WebCompiler
